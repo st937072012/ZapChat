@@ -1,7 +1,6 @@
 <?
 header('Content-Type:text/html;charset=utf-8');
 session_start();
-echo $_SESSION['name'];
 if(!isset( $_SESSION['name'] ) ){
 
  echo '<script>alert("請先登入 !" ); location.href="signin.php";</script>';
@@ -53,19 +52,6 @@ if(!isset( $_SESSION['name'] ) ){
       <h2>Chat Room 1</h2>
       <div class="jumbotron" id="msg_block">
         
-        
-          <?
-
-            
-          $xml=simplexml_load_file("msg1.xml");
-          foreach($xml->children() as $child){
-            echo "<h3>". $child->getName() . "：<p>　" . $child . "</p></h3>";
-           }
-
-
-
-          ?>
-        
 
       </div>
 
@@ -77,10 +63,10 @@ if(!isset( $_SESSION['name'] ) ){
 <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
 <br>
  <div class="container">
-<form  role="form"  onSubmit="return check_null();">
+<form  role="form">
 
   <div class="form-group">
-    <input type="text" class="form-control" id="msg" name="msg" placeholder="輸入訊息...">
+    <input type="text" class="form-control" id="msg" name="msg" placeholder="輸入訊息..." onkeydown="testForEnter();">
   </div>
  
 </form>
@@ -101,6 +87,7 @@ if(!isset( $_SESSION['name'] ) ){
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery.timer.js"></script>
     <script>
+    function testForEnter(){if (event.keyCode == 13){event.cancelBubble=true;event.returnValue=false;}}
     function check_null(){
       if(document.getElementById('msg').value=="")return false;
       else return true;      
@@ -109,25 +96,30 @@ if(!isset( $_SESSION['name'] ) ){
 
     $(function(){
 
+      
 
-      $('#msg')keydown(function(e) {
-        if (e.keyCode == 13 && this.val()!="") { 
-       $('.msg_show_all_reply').bind('click',function(){
-  
-      $.ajax({
+
+
+      $('#msg').keydown(function(e) {
+        if (e.keyCode == 13 && $('#msg').val()!="") { 
+       
+       var m = $('#msg').val();
+
+      var request = $.ajax({
       type:"POST",
       url:"insert.php",
-      data:"id="+ $_SESSION['name']+"&msg="+$('#msg').val(),
-       beforeSend: function(){},
-       error: function(){
-          $('#msg_block').append('<div class="msg_show_error">發生錯誤，請重試!</div>');
-       },
-       success: function(){},
-       complete: function(){$('#msg').val()="";},
+      data:{msg:m},
+       success: function(){
+      $('#msg').val("");
+      $('body').scrollTop($('body').height());
+       }
+      });
+      request.fail(function( jqXHR, textStatus ) {
+      $('#msg_block').append( "Request failed: " + textStatus );
       });
     
 
-        })
+        
       }
 
       });
@@ -137,24 +129,31 @@ if(!isset( $_SESSION['name'] ) ){
       var timer;
 
       timer = $.timer(timeout, function() {
-           $.ajax({
+        //  $('#msg_block').append(timeout++);
+
+        aja_sel();
+
+       
+    
+      });
+
+
+ function aja_sel(){
+         $.ajax({
       type:"POST",
       url:"select.php",
-       beforeSend: function(){},
-       error: function(){
-          $('#msg_block').append('<div class="msg_show_error">發生錯誤，請重試!</div>');
-       },
        success: function(data){
           $('#msg_block').html(data);
-       },
-       complete: function(){},
-      });
+       }
         });
 
+$('body').scrollTop($('body').height());
 
-
+     }
+    
 
     });
+
     </script>
   </body>
 </html>
