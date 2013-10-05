@@ -7,6 +7,7 @@ $boo = false;
 $acceptuser = array(
     "rock" => "123",
     "zap" => "123",
+    "scandal" => "123",
 );
 
 foreach ($acceptuser as $key => $value) {
