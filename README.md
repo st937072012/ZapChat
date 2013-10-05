@@ -1,6 +1,6 @@
 ##ZapChat
 
- ## Init
+ ##Init
   1. 前端使用 bootstrap 框架構成
   2. 後端使用 php simpleXML 存取資料
   3. 資料使用 xml 檔案儲存
